@@ -1,32 +1,94 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <h2>Bar Chart Example</h2>
+    <button @click="AddElement()">AddElement</button>
+    <button @click="RemoveElement()">RemoveElement</button>
+    <!-- These are the custom components we'll create -->
+    <!-- Values for `my-box` are percentages of the width of the canvas. -->
+    <!-- Each bar will take up an equal space of the canvas. -->
+    <my-canvas style="width: 100%; height: 600px;">
+      <my-box
+        v-for="(obj, index) in chartValues" v-bind:key="obj.version"
+        :x1="((index / chartValues.length) * 100)"
+        :x2="((index / chartValues.length) * 100) + (100 / chartValues.length)"
+        :y1="100"
+        :y2="100 - obj.val"
+        :color="obj.color"
+        :value="obj.val"
+      >
+      </my-box>
+    </my-canvas>
   </div>
 </template>
 
-<style lang="less">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+import MyCanvas from './MyCanvas.vue';
+import MyBox from './MyBox.vue';
+
+export default {
+  name: 'app',
+  components: {
+    MyCanvas,
+    MyBox
+  },
+
+  data () {
+    return {
+      chartValues: [
+        // {val: 24, color: 'red'},
+        // {val: 32, color: '#0f0'},
+        // {val: 66, color: 'rebeccapurple'},
+        // {val: 1, color: 'green'},
+        // {val: 28, color: 'blue'},
+        // {val: 60, color: 'rgba(150, 100, 0, 0.2)'},
+      ],
+    
+    }
+  },
+  methods: {
+    AddElement() {
+        let value = Math.floor(Math.random() * 100); 
+        let color = {
+          red: Math.floor(Math.random() * 255),
+          green: Math.floor(Math.random() * 255),
+          blue: Math.floor(Math.random() * 255)
+        };
+
+       this.chartValues.push({val:value,color: `rgb(${color.red},${color.green},${color.blue})`,version : 1})
+      },
+      RemoveElement() {
+        this.chartValues.pop();
+        this.chartValues.forEach(f=>++f.version);
+      }
+  },
+
+  // Randomly selects a value to randomly increment or decrement every 16 ms.
+  // Not really important, just demonstrates that reactivity still works.
+  mounted () {
+   let dir = 1;
+    let selectedVal = Math.floor(Math.random() * this.chartValues.length);
+
+    setInterval(() => {
+      if (Math.random() > 0.995) dir *= -1;
+      if (Math.random() > 0.99) selectedVal = Math.floor(Math.random() * this.chartValues.length);
+
+      this.chartValues[selectedVal].val = Math.min(Math.max(this.chartValues[selectedVal].val + dir * 0.5, 0), 100);
+    }, 16);
+  }
+}
+</script>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
 }
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+#app {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  padding: 20px;
+  box-sizing: border-box;
 }
 </style>
