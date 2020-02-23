@@ -13,7 +13,7 @@ class Rectangle extends BaseCanvasElement {
         this.width = now.x-prev.x || 0;
         this.height = now.y-prev.y || 0;
         this.color = `rgb(${color.red},${color.green},${color.blue})` || '#F00';
-       
+        this.lineWidth = 4;
         //this.type = require('./rectangle.vue');
 
     }
@@ -21,9 +21,8 @@ class Rectangle extends BaseCanvasElement {
 class Clear extends BaseCanvasElement {
     constructor(version) {
         super('clear',version);
-        this.version = 0;
+        this.version = version;
         this.type = 'clear';
-
     }
 }
 

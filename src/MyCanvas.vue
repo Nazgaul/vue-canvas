@@ -39,10 +39,12 @@ export default {
     OnMouseDown(event) {
       this.prev = this.GetXY(event);
       this.isDragging = true;
-      console.log("Down");
     },
     OnMouseMove(event) {
-      console.log("Move");
+      if (this.isDragging) {
+        let now = this.GetXY(event);
+        this.$emit("drawDummy", { now, prev: this.prev });
+      }
     },
     OnMouseUp(event) {
       let now = this.GetXY(event);

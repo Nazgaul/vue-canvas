@@ -9,7 +9,6 @@ export default {
     val: Clear
   },
   render() {
-
     if (!this.provider.context) return;
     const ctx = this.provider.context;
     ctx.clearRect(0, 0,  ctx.canvas.width, ctx.canvas.height);

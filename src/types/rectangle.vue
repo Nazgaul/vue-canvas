@@ -12,8 +12,11 @@ export default {
   render() {
     if (!this.provider.context) return;
     const ctx = this.provider.context;
-    ctx.fillStyle = this.val.color;
-    ctx.fillRect(this.val.x, this.val.y, this.val.width, this.val.height);
+    ctx.beginPath();
+    ctx.lineWidth = this.val.lineWidth;
+    ctx.strokeStyle = this.val.color;
+    ctx.strokeRect(this.val.x, this.val.y, this.val.width, this.val.height);
+    ctx.stroke();
     return null;
   }
 };
