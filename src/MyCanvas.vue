@@ -1,6 +1,6 @@
 <template>
   <div class="my-canvas-wrapper">
-    <canvas ref="my-canvas"></canvas>
+    <canvas ref="my-canvas" @click="DoStuff"></canvas>
     <slot></slot>
   </div>
 </template>
@@ -15,25 +15,46 @@ export default {
         // This is the CanvasRenderingContext that children will draw to.
         context: null
       }
-    }
+    };
   },
 
   // Allows any child component to `inject: ['provider']` and have access to it.
-  provide () {
+  provide() {
     return {
       provider: this.provider
+    };
+  },
+  methods: {
+    DoStuff(event) {
+
+    const rect = this.$refs["my-canvas"].getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+
+      
+      this.$emit("clicked", { x, y });
     }
   },
 
-  mounted () {
+  mounted() {
     // We can't access the rendering context until the canvas is mounted to the DOM.
     // Once we have it, provide it to all child components.
-    this.provider.context = this.$refs['my-canvas'].getContext('2d')
+    this.provider.context = this.$refs["my-canvas"].getContext("2d");
 
     // Resize the canvas to fit its parent's width.
     // Normally you'd use a more flexible resize system.
-    this.$refs['my-canvas'].width = this.$refs['my-canvas'].parentElement.clientWidth
-    this.$refs['my-canvas'].height = this.$refs['my-canvas'].parentElement.clientHeight
+    this.$refs["my-canvas"].width = this.$refs[
+      "my-canvas"
+    ].parentElement.clientWidth;
+    this.$refs["my-canvas"].height = this.$refs[
+      "my-canvas"
+    ].parentElement.clientHeight;
   }
-}
+ 
+};
 </script>
+<style scoped>
+.my-canvas-wrapper {
+  border: 1px solid red;
+}
+</style>
