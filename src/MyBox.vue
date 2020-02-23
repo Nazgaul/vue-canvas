@@ -12,6 +12,7 @@ export default {
   inject: ["provider"],
 
   props: {
+   
     // Start coordinates (percentage of canvas dimensions).
     x1: {
       type: Number,
