@@ -8,15 +8,10 @@
     <!-- Each bar will take up an equal space of the canvas. -->
     <my-canvas style="width: 100%; height: 600px;">
       <component
-        v-bind:is="obj.componentToRender"
+        v-bind:is="obj.type"
         v-bind:key="obj.version"
-        v-bind:x1="((index / chartValues.length) * 100)"
-        v-bind:x2="((index / chartValues.length) * 100) + (100 / chartValues.length)"
-        v-bind:y="100"
-        v-bind:y2="100 - obj.val"
-        v-bind:color="obj.color"
-        v-bind:value="obj.val"
-        v-for="(obj, index) in chartValues"
+        v-bind:val="obj"
+        v-for="(obj) in chartValues"
       ></component>
       <!-- <my-box
         v-for="(obj, index) in chartValues" v-bind:key="obj.version"
@@ -35,6 +30,7 @@
 <script>
 import MyCanvas from "./MyCanvas.vue";
 import MyBox from "./MyBox.vue";
+import Rectangle from "./Types/Rectangle.js";
 
 export default {
   name: "app",
@@ -42,16 +38,10 @@ export default {
     MyCanvas,
     MyBox
   },
-
+  
   data() {
     return {
       chartValues: [
-        // {val: 24, color: 'red'},
-        // {val: 32, color: '#0f0'},
-        // {val: 66, color: 'rebeccapurple'},
-        // {val: 1, color: 'green'},
-        // {val: 28, color: 'blue'},
-        // {val: 60, color: 'rgba(150, 100, 0, 0.2)'},
       ]
     };
   },
@@ -63,17 +53,47 @@ export default {
         green: Math.floor(Math.random() * 255),
         blue: Math.floor(Math.random() * 255)
       };
-      this.chartValues.forEach(f => ++f.version);
-      this.chartValues.push({
-        componentToRender: "my-box",
-        val: value,
-        color: `rgb(${color.red},${color.green},${color.blue})`,
-        version: 1
+
+    
+       let length =  this.chartValues.length + 1;
+     
+      this.chartValues.forEach((f,index) => {
+          f.version = ++f.version;
+          f.x1 =  (index / length) * 100,
+          f.x2 =  ((index / length) * 100) + (100 / length)
       });
+
+      let index = length - 1;
+      let rectangle = new Rectangle(
+      (index / length) * 100,
+      100,
+      ((index / length) * 100) + (100 / length),
+      100 - value,
+      value,
+      color);
+      this.chartValues.push(rectangle)
+      // this.chartValues.push( {
+      //   componentToRender: "my-box",
+      //   value: value,
+      //   color: `rgb(${color.red},${color.green},${color.blue})`,
+      //   y: 100,
+      //   y2: 100- value,
+      //   x1: 100,
+      //   x2: 100,
+      //   version: 1
+      // });
+      // eslint-disable-next-line no-console
+      console.log( this.chartValues);
     },
     RemoveElement() {
       this.chartValues.pop();
-      this.chartValues.forEach(f => ++f.version);
+      let length =  this.chartValues.length;
+      this.chartValues.forEach((f,index) => {
+          f.version = ++f.version;
+          f.x1 =  (index / length) * 100,
+          f.x2 =  ((index / length) * 100) + (100 / length)
+      });
+     // this.chartValues.forEach(f => ++f.version);
     }
   },
 
@@ -89,10 +109,9 @@ export default {
       if (Math.random() > 0.995) dir *= -1;
       if (Math.random() > 0.99)
         selectedVal = Math.floor(Math.random() * this.chartValues.length);
-
-        self.chartValues[selectedVal].val = Math.min(
-        Math.max(this.chartValues[selectedVal].val + dir * 0.5, 0),
-        100
+        self.chartValues[selectedVal].value = Math.min(
+            Math.max(this.chartValues[selectedVal].value + dir * 0.5, 0),
+            100
       );
       }
     }, 16);

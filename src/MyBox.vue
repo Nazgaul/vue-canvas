@@ -7,43 +7,62 @@ const percentWidthToPix = (percent, ctx) =>
 const percentHeightToPix = (percent, ctx) =>
   Math.floor((ctx.canvas.height / 100) * percent);
 
+
+  // function  coordinates(x1,y1,x2,y2,value,color) {
+  //   debugger;
+  //   this.x1 = x1 || 0;
+  //   this.x2 = x2 || 0;
+  //   this.y1 = y1 || 0;
+  //   this.y2 = y2 || 0;
+  //   this.value = value || 0;
+  //   this.color = color || '#F00';
+  // }
+  import Rectangle  from "./Types/Rectangle";
+
 export default {
   // Gets us the provider property from the parent <my-canvas> component.
   inject: ["provider"],
 
   props: {
-   
+   val : Rectangle,
+   index: {
+     type: Number,
+     default: 0
+   }
+    
     // Start coordinates (percentage of canvas dimensions).
-    x1: {
-      type: Number,
-      default: 0
-    },
-    y1: {
-      type: Number,
-      default: 0
-    },
+    // x1: {
+    //   type: Number,
+    //   default: 0
+    // },
+    // y1: {
+    //   type: Number,
+    //   default: 0
+    // },
 
-    // End coordinates (percentage of canvas dimensions).
-    x2: {
-      type: Number,
-      default: 0
-    },
-    y2: {
-      type: Number,
-      default: 0
-    },
+    // // End coordinates (percentage of canvas dimensions).
+    // x2: {
+    //   type: Number,
+    //   default: 0
+    // },
+    // y2: {
+    //   type: Number,
+    //   default: 0
+    // },
 
-    // The value to display.
-    value: {
-      type: Number,
-      defualt: 0
-    },
+    // // The value to display.
+    // value: {
+    //   type: Number,
+    //   defualt: 0
+    // },
 
-    // The color of the box.
-    color: {
-      type: String,
-      default: "#F00"
-    }
+    // // The color of the box.
+    // color: {
+    //   type: String,
+    //   default: "#F00"
+    // }
+    // }
+    
   },
 
   data() {
@@ -65,10 +84,10 @@ export default {
 
       // Turn start / end percentages into x, y, width, height in pixels.
       const calculated = {
-        x: percentWidthToPix(this.x1, ctx),
-        y: percentHeightToPix(this.y1, ctx),
-        w: percentWidthToPix(this.x2 - this.x1, ctx),
-        h: percentHeightToPix(this.y2 - this.y1, ctx)
+        x: percentWidthToPix(this.val.x1, ctx),
+        y: percentHeightToPix(this.val.y1, ctx),
+        w: percentWidthToPix(this.val.x2 - this.val.x1, ctx),
+        h: percentHeightToPix(this.val.y2 - this.val.y1, ctx)
       };
 
       // Yes yes, side-effects. This lets us cache the box dimensions of the previous render.
@@ -99,7 +118,7 @@ export default {
 
     // Draw the new rectangle.
     ctx.rect(newBox.x, newBox.y, newBox.w, newBox.h);
-    ctx.fillStyle = this.color;
+    ctx.fillStyle = this.val.color;
     ctx.fill();
 
     // Draw the text
@@ -107,7 +126,7 @@ export default {
     ctx.font = "28px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText(
-      Math.floor(this.value),
+      Math.floor(this.val.value),
       newBox.x + newBox.w / 2,
       newBox.y - 14
     );
