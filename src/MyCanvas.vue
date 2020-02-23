@@ -1,6 +1,6 @@
 <template>
   <div class="my-canvas-wrapper">
-    <canvas ref="my-canvas" @click="DoStuff"></canvas>
+    <canvas ref="my-canvas" @mousedown="OnMouseDown" @mouseup="OnMouseUp" @mousemove="OnMouseMove"></canvas>
     <slot></slot>
   </div>
 </template>
@@ -14,6 +14,11 @@ export default {
       provider: {
         // This is the CanvasRenderingContext that children will draw to.
         context: null
+      },
+      isDragging: false,
+      prev: {
+        x: null,
+        y: null
       }
     };
   },
@@ -25,14 +30,25 @@ export default {
     };
   },
   methods: {
-    DoStuff(event) {
-
-    const rect = this.$refs["my-canvas"].getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
-
-      
-      this.$emit("clicked", { x, y });
+    GetXY(event) {
+      const rect = this.$refs["my-canvas"].getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      return { x, y };
+    },
+    OnMouseDown(event) {
+      this.prev = this.GetXY(event);
+      this.isDragging = true;
+      console.log("Down");
+    },
+    OnMouseMove(event) {
+      console.log("Move");
+    },
+    OnMouseUp(event) {
+      let now = this.GetXY(event);
+      this.$emit("draw", { now, prev: this.prev });
+      this.prev = null;
+      this.isDragging = false;
     }
   },
 
@@ -50,7 +66,6 @@ export default {
       "my-canvas"
     ].parentElement.clientHeight;
   }
- 
 };
 </script>
 <style scoped>

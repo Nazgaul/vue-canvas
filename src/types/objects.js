@@ -6,12 +6,12 @@ class BaseCanvasElement {
     }
 }
 class Rectangle extends BaseCanvasElement {
-    constructor(x, y, width, height, color, version) {
+    constructor(now,prev, color, version) {
         super("rectangle",version);
-        this.x = x || 0;
-        this.y = y || 0;
-        this.width = width || 0;
-        this.height = height || 0;
+        this.x = prev.x || 0;
+        this.y = prev.y || 0;
+        this.width = now.x-prev.x || 0;
+        this.height = now.y-prev.y || 0;
         this.color = `rgb(${color.red},${color.green},${color.blue})` || '#F00';
        
         //this.type = require('./rectangle.vue');

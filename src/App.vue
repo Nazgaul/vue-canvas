@@ -4,11 +4,11 @@
     <!-- <button @click="AddElement()">AddElement</button> -->
     <button @click="RemoveElement()">RemoveElement</button>
 
-    <my-canvas style="width: 100%; height: 600px;" @clicked="DoStuff">
+    <my-canvas style="width: 100%; height: 600px;" @draw="draw">
       <component
-        v-bind:is="obj.type"
-        v-bind:key="obj.version"
-        v-bind:val="obj"
+        :is="obj.type"
+        :key="obj.version"
+        :val="obj"
         v-for="(obj) in elements"
       ></component>
     </my-canvas>
@@ -29,7 +29,6 @@ export default {
     MyCanvas,
     rectangle,
     clear
-    //MyBox
   },
 
   data() {
@@ -37,6 +36,7 @@ export default {
       elements: [
         new Objects.Clear(0)
       ]
+     
     };
   },
   methods: {
@@ -47,15 +47,14 @@ export default {
       this.elements.pop();
       this.elements.forEach(f=> ++f.version)
     },
-    DoStuff(e) {
+    draw({now,prev}) {
       let color = {
         red: Math.floor(Math.random() * 255),
         green: Math.floor(Math.random() * 255),
         blue: Math.floor(Math.random() * 255)
       };
-      let size = 50;
       var lastVersion = this.elements[this.elements.length - 1].version;
-      let rectangle = new Objects.Rectangle(e.x, e.y, size, size, color, ++lastVersion);
+      let rectangle = new Objects.Rectangle(now,prev, color, ++lastVersion);
       this.elements.push(rectangle);
     }
   }
