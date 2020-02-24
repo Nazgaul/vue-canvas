@@ -15,7 +15,6 @@ export default {
     ctx.beginPath();
     ctx.fillStyle = '#fff';
     ctx.fillRect(this.val.x, this.val.y, this.val.width, this.val.height);
-    //ctx.fill();
     return null;
   }
 };

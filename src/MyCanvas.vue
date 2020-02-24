@@ -1,6 +1,6 @@
 <template>
   <div class="my-canvas-wrapper">
-    <canvas ref="my-canvas" @mousedown="OnMouseDown" @mouseup="OnMouseUp" @mousemove="OnMouseMove"></canvas>
+    <canvas ref="my-canvas" @mousedown="OnMouseDown" @mouseup="OnMouseUp" @mousemove="OnMouseMove" @click="OnClick"></canvas>
     <slot></slot>
   </div>
 </template>
@@ -51,6 +51,10 @@ export default {
       this.$emit("draw", { now, prev: this.prev });
       this.prev = null;
       this.isDragging = false;
+    },
+    OnClick(event) {
+       let now = this.GetXY(event);
+      this.$emit("click",  now );
     }
   },
 

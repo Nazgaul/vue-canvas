@@ -1,31 +1,45 @@
 <template>
   <v-container fluid>
     <!-- <button @click="AddElement()">AddElement</button> -->
-    <v-btn  @click="RemoveElement()">Remove Element</v-btn>
-    <v-btn  @click="SelectElement()">Select Element</v-btn>
+    <v-btn @click="RemoveElement()">Undo</v-btn>
     <v-color-picker v-model="selectedColor"></v-color-picker>
-    <v-select v-model="selected"
-          :items="options"
-          label="Standard"
-        ></v-select>
-    <!-- <select v-model="selectedColor">
-      <option v-for="(option,index) in options" v-bind:value="option" :key="index">{{ option.type }}</option>
-    </select>
-    <select v-model="selected">
-      <option v-for="(option,index) in options" v-bind:value="option" :key="index">{{ option.type }}</option>
-    </select> -->
-    <!-- 
-   <input type="radio" :value="new Objects.Rectangle()" v-model="typeToDraw">
-      <label for="one">One</label>
-    <input type="radio" value="Two" v-model="typeToDraw">
-    <label for="two">Two</label>
-    <span>Picked: {{ typeToDraw }}</span>-->
-
+    <div class="text-center">
+       <v-btn class="ma-2"
+        v-for="(command,key) in commands"
+        :key="key"
+        small
+        outlined
+        @click="SelectCommand(command)"
+      >
+        {{key}}
+        <!-- <v-icon v-text="shape.icon"></v-icon> -->
+      </v-btn>
+      <v-btn class="ma-2"
+        v-for="(shape,key) in shapes"
+        :key="key"
+        small
+        outlined
+        :color="selectedShape.type===shape.type ? 'green' : 'black'"
+        @click="SelectShapeAction(key)"
+      >
+        {{key}}
+        <!-- <v-icon v-text="shape.icon"></v-icon> -->
+      </v-btn>
+    </div>
+    <!-- <v-select v-model="selectedShape"
+          :items="shapes"
+          label="Shape">
+    </v-select>-->
     <div class="canvas-section">
       <my-canvas style="width: 100%; height: 600px;">
         <component :is="obj.type" :key="obj.version" :val="obj" v-for="(obj) in elements"></component>
       </my-canvas>
-      <my-canvas style="width: 100%; height: 600px;" @drawDummy="drawDummy" @draw="draw">
+      <my-canvas
+        style="width: 100%; height: 600px;"
+        @drawDummy="drawDummy"
+        @draw="draw"
+        @click="click"
+      >
         <component :is="obj.type" :key="obj.version" :val="obj" v-for="(obj) in elementsDummy"></component>
       </my-canvas>
     </div>
@@ -42,31 +56,34 @@ import eraserCanvas from "../types/eraser.vue";
 import Objects from "../types/objects";
 
 export default {
-    components: {
-      MyCanvas,
-      rectangleCanvas,
-      clearCanvas,
-      circleCanvas,
-      lineCanvas,
-      eraserCanvas
-    },
+  components: {
+    MyCanvas,
+    rectangleCanvas,
+    clearCanvas,
+    circleCanvas,
+    lineCanvas,
+    eraserCanvas
+  },
   data() {
     return {
+      //todo : selectShape, equation, handwriting, upload image, snapshot,
       elements: [new Objects.Clear(0)],
       elementsDummy: [new Objects.Clear(0)],
-      options: [
-       {text: 'rectangle' ,value: new Objects.Rectangle()},
-       {text: 'circle' ,value: new Objects.Circle()},
-       {text: 'line' ,value: new Objects.Line()},
-       {text: 'eraser' ,value: new Objects.Eraser()},
-      ],
-     
+      commands: {
+        "Clear All" : this.ClearAll
+      },
+      shapes: {
+        rectangle:  new Objects.Rectangle() ,
+        circle:  new Objects.Circle(),
+        line: new Objects.Line(),
+        eraser: new Objects.Eraser()
+      },
       selectedColor: null,
-      selected: null
-    }
+      selectedShape: new Objects.Rectangle()
+    };
   },
 
-    methods: {
+  methods: {
     RemoveElement() {
       if (this.elements.length === 1) {
         return;
@@ -74,44 +91,58 @@ export default {
       this.elements.pop();
       this.elements.forEach(f => ++f.version);
     },
-    drawDummy({ now, prev }) {
-      if (!this.selected) {
+    ClearAll() {
+      if (this.elements.length === 1) {
         return;
       }
-      let color = {
-        red: 255,
-        green: 0,
-        blue: 0
-      };
+      if (!confirm("Are you sure?"))  {
+        return;
+      }
+      let clearObject = this.elements[0];
+      clearObject.version += 1;
+      this.elements = [clearObject];
+    },
+    SelectShapeAction(shape) {
+      this.selectedShape = this.shapes[shape];
+      console.log(typeof this.selectedShape);
+    },
+     SelectCommand(command) {
+       command();
+    //  // this.selectedShape
+     },
+
+    drawDummy({ now, prev }) {
+      if (!this.selectedShape) {
+        return;
+      }
+
       var lastVersion = this.elementsDummy[this.elementsDummy.length - 1]
         .version;
       let newElementClear = new Objects.Clear(++lastVersion);
-      let object = this.selected.create(now, prev, color, ++lastVersion);
- 
+      let object = this.selectedShape.create(
+        now,
+        prev,
+        this.selectedColor.hex,
+        ++lastVersion
+      );
       this.elementsDummy = [newElementClear, object];
     },
     draw({ now, prev }) {
-      if (!this.selected) {
+      if (!this.selectedShape) {
         return;
       }
-      //var lastVersion = this.elementsDummy[this.elementsDummy.length - 1].version;
       this.elementsDummy = [new Objects.Clear(0)];
-      let v = this.selectedColor
-      console.log(v);
-      // let color = {
-      //   red: Math.floor(Math.random() * 255),
-      //   green: Math.floor(Math.random() * 255),
-      //   blue: Math.floor(Math.random() * 255)
-      // };
+      let v = this.selectedColor;
+
       var lastVersion = this.elements[this.elements.length - 1].version;
-      let object = this.selected.create(now, prev, v.hex, ++lastVersion);
-      //let rectangle = new Objects.Rectangle(now, prev, color, ++lastVersion);
+      let object = this.selectedShape.create(now, prev, v.hex, ++lastVersion);
       this.elements.push(object);
+    },
+    click({ x, y }) {
+      console.log(x, y);
     }
   }
-  }
-  
-
+};
 </script>
 
 <style>

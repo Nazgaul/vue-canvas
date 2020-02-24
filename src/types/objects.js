@@ -1,3 +1,4 @@
+
 class BaseCanvasElement {
     constructor(type,version) {
         this.type = type;
@@ -50,6 +51,9 @@ class Eraser  extends BaseCanvasElement {
         eraser.height = now.y-prev.y || 0;
         eraser.version = version;
         return eraser;
+    }
+    isInShape({x,y}) {
+        return false;
     }
 }
 
