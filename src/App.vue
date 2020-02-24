@@ -4,17 +4,18 @@
     <button @click="RemoveElement()">RemoveElement</button>
     <button @click="SelectElement()">SelectElement</button>
 
+    <select v-model="selectedColor">
+      <option v-for="(option,index) in options" v-bind:value="option" :key="index">{{ option.type }}</option>
+    </select>
     <select v-model="selected">
-        <option v-for="(option,index) in options" v-bind:value="option" :key="index">
-        {{ option.type }}
-      </option>
-      </select>
-<!-- 
+      <option v-for="(option,index) in options" v-bind:value="option" :key="index">{{ option.type }}</option>
+    </select>
+    <!-- 
    <input type="radio" :value="new Objects.Rectangle()" v-model="typeToDraw">
       <label for="one">One</label>
     <input type="radio" value="Two" v-model="typeToDraw">
     <label for="two">Two</label>
-    <span>Picked: {{ typeToDraw }}</span> -->
+    <span>Picked: {{ typeToDraw }}</span>-->
 
     <div class="canvas-section">
       <my-canvas style="width: 100%; height: 600px;">
@@ -51,13 +52,29 @@ export default {
     return {
       elements: [new Objects.Clear(0)],
       elementsDummy: [new Objects.Clear(0)],
-      options : [
-        new Objects.Rectangle(), 
+      options: [
+        new Objects.Rectangle(),
         new Objects.Circle(),
         new Objects.Line(),
         new Objects.Eraser()
       ],
-        
+      predefinedColors: [
+        "#000000",
+        "#FF0000",
+        "#00ff00",
+        "#40e0d0",
+        "#800000",
+        "#0000ff",
+        "#008000",
+        "#ffd700",
+        "#8a2be2",
+        "#ff00ff",
+        "#c0c0c0",
+        "#ffff00",
+        "#088da5",
+        "#003366"
+      ],
+      selectedColor: this.predefinedColors[0],
       selected: null
     };
   },
@@ -75,20 +92,21 @@ export default {
       }
       let color = {
         red: 255,
-        green:0,
+        green: 0,
         blue: 0
       };
-      var lastVersion = this.elementsDummy[this.elementsDummy.length - 1].version;
+      var lastVersion = this.elementsDummy[this.elementsDummy.length - 1]
+        .version;
       let newElementClear = new Objects.Clear(++lastVersion);
-      let object = this.selected.create(now,prev, color, ++lastVersion);
-      
-      this.elementsDummy = [newElementClear,object];
+      let object = this.selected.create(now, prev, color, ++lastVersion);
+
+      this.elementsDummy = [newElementClear, object];
     },
     draw({ now, prev }) {
-       if (!this.selected) {
+      if (!this.selected) {
         return;
       }
-       //var lastVersion = this.elementsDummy[this.elementsDummy.length - 1].version;
+      //var lastVersion = this.elementsDummy[this.elementsDummy.length - 1].version;
       this.elementsDummy = [new Objects.Clear(0)];
       let color = {
         red: Math.floor(Math.random() * 255),
@@ -96,7 +114,7 @@ export default {
         blue: Math.floor(Math.random() * 255)
       };
       var lastVersion = this.elements[this.elements.length - 1].version;
-      let object = this.selected.create(now,prev, color, ++lastVersion);
+      let object = this.selected.create(now, prev, color, ++lastVersion);
       //let rectangle = new Objects.Rectangle(now, prev, color, ++lastVersion);
       this.elements.push(object);
     }
@@ -120,9 +138,10 @@ body {
 }
 .canvas-section {
   position: relative;
-  width: 100%; height: 600px  ;
+  width: 100%;
+  height: 600px;
 }
-.my-canvas-wrapper  {
+.my-canvas-wrapper {
   position: absolute;
   top: 0;
   left: 0;
