@@ -13,15 +13,15 @@ class Rectangle extends BaseCanvasElement {
     constructor() {
         super("rectangleCanvas", 0);
     }
-    create(now, prev, color, version) {
+    create(now, prev, color, version, isDummy) {
         let rectange = new Rectangle();
         rectange.x = prev.x || 0;
         rectange.y = prev.y || 0;
         rectange.width = now.x - prev.x || 0;
         rectange.height = now.y - prev.y || 0;
         rectange.color = color;
-        rectange.lineWidth = 4;
         rectange.version = version;
+        rectange.isDummy = isDummy;
         return rectange;
     }
 
@@ -43,13 +43,14 @@ class Eraser extends BaseCanvasElement {
     constructor() {
         super("eraserCanvas", 0);
     }
-    create(now, prev, color, version) {
+    create(now, prev, color, version, isDummy) {
         let eraser = new Eraser();
         eraser.x = prev.x || 0;
         eraser.y = prev.y || 0;
         eraser.width = now.x - prev.x || 0;
         eraser.height = now.y - prev.y || 0;
         eraser.version = version;
+        eraser.isDummy = isDummy;
         return eraser;
     }
     isInShape({ x, y }) {
@@ -62,7 +63,7 @@ class Circle extends BaseCanvasElement {
         super("circleCanvas", 0);
     }
 
-    create(now, prev, color, version) {
+    create(now, prev, color, version, isDummy) {
         let circle = new Circle();
         circle.x = prev.x || 0;
         circle.y = prev.y || 0;
@@ -72,6 +73,7 @@ class Circle extends BaseCanvasElement {
         circle.color = color;
         circle.lineWidth = 4;
         circle.version = version;
+        circle.isDummy = isDummy;
         return circle;
     }
     isInShape({ x, y }) {
@@ -83,7 +85,7 @@ class Line extends BaseCanvasElement {
     constructor(version) {
         super('lineCanvas', version);
     }
-    create(now, prev, color, version) {
+    create(now, prev, color, version,  isDummy) {
         let line = new Line();
         line.x = prev.x || 0;
         line.y = prev.y || 0;
@@ -92,6 +94,7 @@ class Line extends BaseCanvasElement {
         line.color = color;
         line.lineWidth = 4;
         line.version = version;
+        line.isDummy = isDummy;
         return line;
     }
 

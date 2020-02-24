@@ -133,9 +133,9 @@ export default {
           now,
           prev,
           this.selectedColor.hex,
-          ++lastVersion
+          ++lastVersion,
+          true
       );
-     // this.$forceUpdate();
       this.elementsDummy = [newElementClear,object];
     },
     draw({ now, prev }) {
@@ -149,7 +149,7 @@ export default {
       let v = this.selectedColor;
 
       var lastVersion = this.elements[this.elements.length - 1].version;
-      let object = this.selectedShape.create(now, prev, v.hex, ++lastVersion);
+      let object = this.selectedShape.create(now, prev, v.hex, ++lastVersion,false);
       this.elements.push(object);
     },
     click({ x, y }) {
