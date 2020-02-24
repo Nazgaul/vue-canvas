@@ -2,6 +2,7 @@
   <div id="app">
     <!-- <button @click="AddElement()">AddElement</button> -->
     <button @click="RemoveElement()">RemoveElement</button>
+    <button @click="SelectElement()">SelectElement</button>
 
     <select v-model="selected">
         <option v-for="(option,index) in options" v-bind:value="option" :key="index">
@@ -32,6 +33,7 @@ import rectangleCanvas from "./types/rectangle.vue";
 import circleCanvas from "./types/circle.vue";
 import clearCanvas from "./types/clear.vue";
 import lineCanvas from "./types/line.vue";
+import eraserCanvas from "./types/eraser.vue";
 import Objects from "./types/objects";
 
 export default {
@@ -41,7 +43,8 @@ export default {
     rectangleCanvas,
     clearCanvas,
     circleCanvas,
-    lineCanvas
+    lineCanvas,
+    eraserCanvas
   },
 
   data() {
@@ -51,7 +54,10 @@ export default {
       options : [
         new Objects.Rectangle(), 
         new Objects.Circle(),
-        new Objects.Line()],
+        new Objects.Line(),
+        new Objects.Eraser()
+      ],
+        
       selected: null
     };
   },

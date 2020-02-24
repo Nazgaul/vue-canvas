@@ -38,6 +38,21 @@ class Rectangle extends BaseCanvasElement {
     }
 }
 
+class Eraser  extends BaseCanvasElement {
+    constructor() {
+        super("eraserCanvas",0);
+    }
+    create(now,prev, color, version) {
+        let eraser =  new Eraser();
+        eraser.x = prev.x || 0;
+        eraser.y = prev.y || 0;
+        eraser.width = now.x-prev.x || 0;
+        eraser.height = now.y-prev.y || 0;
+        eraser.version = version;
+        return eraser;
+    }
+}
+
 class Circle extends BaseCanvasElement {
     constructor() {
         super("circleCanvas",0);
@@ -55,18 +70,17 @@ class Circle extends BaseCanvasElement {
         circle.version = version;
         return circle;
     }
-
+    isInShape({x,y}) {
+        return false;
+    }
 }
 
 class Line extends BaseCanvasElement {
     constructor(version) {
         super('lineCanvas',version);
-       // this.version = version;
-        //this.type = 'clear';
     }
     create(now,prev,color,version) {
         let line = new Line();
-       
         line.x = prev.x || 0;
         line.y = prev.y || 0;
         line.toX = now.x;
@@ -75,6 +89,10 @@ class Line extends BaseCanvasElement {
         line.lineWidth = 4;
         line.version = version;
         return line;
+    }
+
+    isInShape({x,y}) {
+        return false;
     }
 }
 
@@ -94,5 +112,6 @@ export default {
     Rectangle,
     Clear,
     Circle,
-    Line
+    Line,
+    Eraser
 }
