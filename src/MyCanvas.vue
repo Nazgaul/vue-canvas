@@ -48,7 +48,12 @@ export default {
     },
     OnMouseUp(event) {
       let now = this.GetXY(event);
-      this.$emit("draw", { now, prev: this.prev });
+      var nDeltaX = now.x - this.prev.x;
+      var nDeltaY = now.y - this.prev.y;
+      let distance = Math.sqrt( nDeltaX * nDeltaX +  nDeltaY * nDeltaY);
+      if (distance > 2) {
+        this.$emit("draw", { now, prev: this.prev });
+      }
       this.prev = null;
       this.isDragging = false;
     },

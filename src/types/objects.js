@@ -1,35 +1,35 @@
 
 class BaseCanvasElement {
-    constructor(type,version) {
+    constructor(type, version) {
         this.type = type;
         this.version = version || 0;
     }
-    isInShape({x,y}) {
+    isInShape({ x, y }) {
         return false;
     }
 }
 class Rectangle extends BaseCanvasElement {
-    
+
     constructor() {
-        super("rectangleCanvas",0);
+        super("rectangleCanvas", 0);
     }
-    create(now,prev, color, version) {
-        let rectange =  new Rectangle();
+    create(now, prev, color, version) {
+        let rectange = new Rectangle();
         rectange.x = prev.x || 0;
         rectange.y = prev.y || 0;
-        rectange.width = now.x-prev.x || 0;
-        rectange.height = now.y-prev.y || 0;
+        rectange.width = now.x - prev.x || 0;
+        rectange.height = now.y - prev.y || 0;
         rectange.color = color;
         rectange.lineWidth = 4;
         rectange.version = version;
         return rectange;
     }
 
-    isInShape({x,y}) {
-        if (this.x < x) {
+    isInShape({ x, y }) {
+        if (x < this.x) {
             return false;
         }
-        if (this.y < y) {
+        if (y < this.y) {
             this.false;
         }
         if (this.x + this.width > x && this.y + this.height > y) {
@@ -39,30 +39,30 @@ class Rectangle extends BaseCanvasElement {
     }
 }
 
-class Eraser  extends BaseCanvasElement {
+class Eraser extends BaseCanvasElement {
     constructor() {
-        super("eraserCanvas",0);
+        super("eraserCanvas", 0);
     }
-    create(now,prev, color, version) {
-        let eraser =  new Eraser();
+    create(now, prev, color, version) {
+        let eraser = new Eraser();
         eraser.x = prev.x || 0;
         eraser.y = prev.y || 0;
-        eraser.width = now.x-prev.x || 0;
-        eraser.height = now.y-prev.y || 0;
+        eraser.width = now.x - prev.x || 0;
+        eraser.height = now.y - prev.y || 0;
         eraser.version = version;
         return eraser;
     }
-    isInShape({x,y}) {
+    isInShape({ x, y }) {
         return false;
     }
 }
 
 class Circle extends BaseCanvasElement {
     constructor() {
-        super("circleCanvas",0);
+        super("circleCanvas", 0);
     }
 
-    create(now,prev, color, version) {
+    create(now, prev, color, version) {
         let circle = new Circle();
         circle.x = prev.x || 0;
         circle.y = prev.y || 0;
@@ -74,16 +74,16 @@ class Circle extends BaseCanvasElement {
         circle.version = version;
         return circle;
     }
-    isInShape({x,y}) {
+    isInShape({ x, y }) {
         return false;
     }
 }
 
 class Line extends BaseCanvasElement {
     constructor(version) {
-        super('lineCanvas',version);
+        super('lineCanvas', version);
     }
-    create(now,prev,color,version) {
+    create(now, prev, color, version) {
         let line = new Line();
         line.x = prev.x || 0;
         line.y = prev.y || 0;
@@ -95,18 +95,18 @@ class Line extends BaseCanvasElement {
         return line;
     }
 
-    isInShape({x,y}) {
+    isInShape({ x, y }) {
         return false;
     }
 }
 
 class Clear extends BaseCanvasElement {
     constructor(version) {
-        super('clearCanvas',version);
+        super('clearCanvas', version);
         //this.version = version;
         //this.type = 'clear';
     }
-    isInShape({x,y}) {
+    isInShape({ x, y }) {
         return false;
     }
 }

@@ -12,7 +12,6 @@
         @click="SelectCommand(command)"
       >
         {{key}}
-        <!-- <v-icon v-text="shape.icon"></v-icon> -->
       </v-btn>
       <v-btn class="ma-2"
         v-for="(shape,key) in shapes"
@@ -23,13 +22,9 @@
         @click="SelectShapeAction(key)"
       >
         {{key}}
-        <!-- <v-icon v-text="shape.icon"></v-icon> -->
       </v-btn>
     </div>
-    <!-- <v-select v-model="selectedShape"
-          :items="shapes"
-          label="Shape">
-    </v-select>-->
+ 
     <div class="canvas-section">
       <my-canvas style="width: 100%; height: 600px;">
         <component :is="obj.type" :key="obj.version" :val="obj" v-for="(obj) in elements"></component>
@@ -70,7 +65,11 @@ export default {
       elements: [new Objects.Clear(0)],
       elementsDummy: [new Objects.Clear(0)],
       commands: {
-        "Clear All" : this.ClearAll
+        "Clear All" : this.ClearAll,
+        "Select" : () => {
+          this.selectedShape = {};
+          this.selectedCommand = this;
+        },
       },
       shapes: {
         rectangle:  new Objects.Rectangle() ,
@@ -78,6 +77,7 @@ export default {
         line: new Objects.Line(),
         eraser: new Objects.Eraser()
       },
+      selectedCommand: {},
       selectedColor: null,
       selectedShape: new Objects.Rectangle()
     };
@@ -102,11 +102,13 @@ export default {
       clearObject.version += 1;
       this.elements = [clearObject];
     },
+    SelectElement() {
+
+    },
     SelectShapeAction(shape) {
       this.selectedShape = this.shapes[shape];
-      console.log(typeof this.selectedShape);
     },
-     SelectCommand(command) {
+    SelectCommand(command) {
        command();
     //  // this.selectedShape
      },
@@ -115,21 +117,29 @@ export default {
       if (!this.selectedShape) {
         return;
       }
+      if (typeof(this.selectedShape.version) !== 'number') {
+        return
+      }
 
       var lastVersion = this.elementsDummy[this.elementsDummy.length - 1]
         .version;
       let newElementClear = new Objects.Clear(++lastVersion);
+
       let object = this.selectedShape.create(
-        now,
-        prev,
-        this.selectedColor.hex,
-        ++lastVersion
+          now,
+          prev,
+          this.selectedColor.hex,
+          ++lastVersion
       );
-      this.elementsDummy = [newElementClear, object];
+     // this.$forceUpdate();
+      this.elementsDummy = [newElementClear,object];
     },
     draw({ now, prev }) {
       if (!this.selectedShape) {
         return;
+      }
+      if (typeof(this.selectedShape.version) !== 'number') {
+        return
       }
       this.elementsDummy = [new Objects.Clear(0)];
       let v = this.selectedColor;
@@ -139,7 +149,22 @@ export default {
       this.elements.push(object);
     },
     click({ x, y }) {
+      this.findElementOnCanvas({x,y});
+      if (!this.selectedCommand) {
+        return;
+      }
+      this.findElementOnCanvas({x,y});
       console.log(x, y);
+    },
+    findElementOnCanvas({x,y}) {
+      for (let index = this.elements.length-1; index >= 0; index--) {
+        const element = this.elements[index];
+        if (element.isInShape({x,y})) {
+          console.log(element)
+          break;
+        }
+      }
+      //  console.log('did not find');
     }
   }
 };
