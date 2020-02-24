@@ -1,7 +1,6 @@
 <template>
   <v-container fluid>
     <!-- <button @click="AddElement()">AddElement</button> -->
-    <v-btn @click="RemoveElement()">Undo</v-btn>
     <v-color-picker v-model="selectedColor"></v-color-picker>
     <div class="text-center">
        <v-btn class="ma-2"
@@ -9,8 +8,10 @@
         :key="key"
         small
         outlined
+       :color="selectedCommand != null && selectedCommand===command ? 'green' : 'black'"
         @click="SelectCommand(command)"
       >
+       <!-- :color="selectedCommand != null && selectedCommand.type===command.type ? 'green' : 'black'" -->
         {{key}}
       </v-btn>
       <v-btn class="ma-2"
@@ -18,7 +19,7 @@
         :key="key"
         small
         outlined
-        :color="selectedShape.type===shape.type ? 'green' : 'black'"
+        :color="selectedShape != null && selectedShape.type===shape.type ? 'green' : 'black'"
         @click="SelectShapeAction(key)"
       >
         {{key}}
@@ -61,15 +62,14 @@ export default {
   },
   data() {
     return {
+     
       //todo : selectShape, equation, handwriting, upload image, snapshot,
       elements: [new Objects.Clear(0)],
       elementsDummy: [new Objects.Clear(0)],
       commands: {
         "Clear All" : this.ClearAll,
-        "Select" : () => {
-          this.selectedShape = {};
-          this.selectedCommand = this;
-        },
+        "Undo" : this.RemoveElement,
+        "Select" : this.SelectElement,
       },
       shapes: {
         rectangle:  new Objects.Rectangle() ,
@@ -77,7 +77,8 @@ export default {
         line: new Objects.Line(),
         eraser: new Objects.Eraser()
       },
-      selectedCommand: {},
+      selectedElement: null,
+      selectedCommand: null,
       selectedColor: null,
       selectedShape: new Objects.Rectangle()
     };
@@ -103,9 +104,12 @@ export default {
       this.elements = [clearObject];
     },
     SelectElement() {
+      this.selectedCommand = this.commands["Select"];
+      this.selectedShape = null;
 
     },
     SelectShapeAction(shape) {
+      this.selectedCommand  = null;
       this.selectedShape = this.shapes[shape];
     },
     SelectCommand(command) {
@@ -149,18 +153,21 @@ export default {
       this.elements.push(object);
     },
     click({ x, y }) {
-      this.findElementOnCanvas({x,y});
       if (!this.selectedCommand) {
         return;
       }
-      this.findElementOnCanvas({x,y});
+      if (this.selectedCommand === this.commands["Select"]) {
+        this.findElementOnCanvas({x,y});
+      }
       console.log(x, y);
     },
     findElementOnCanvas({x,y}) {
       for (let index = this.elements.length-1; index >= 0; index--) {
         const element = this.elements[index];
         if (element.isInShape({x,y})) {
-          console.log(element)
+          
+          this.selectedElement = element;
+          this.selectedElement.isSelected = true;
           break;
         }
       }

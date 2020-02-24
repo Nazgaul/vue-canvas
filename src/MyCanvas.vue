@@ -1,7 +1,8 @@
 <template>
   <div class="my-canvas-wrapper">
-    <canvas ref="my-canvas" @mousedown="OnMouseDown" @mouseup="OnMouseUp" @mousemove="OnMouseMove" @click="OnClick"></canvas>
-    <slot></slot>
+    <canvas ref="my-canvas" @mousedown="OnMouseDown" @mouseup="OnMouseUp" @mousemove="OnMouseMove" @click="OnClick">
+      <slot></slot>
+    </canvas>
   </div>
 </template>
 
