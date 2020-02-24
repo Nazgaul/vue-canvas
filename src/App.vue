@@ -1,154 +1,60 @@
 <template>
-  <div id="app">
-    <!-- <button @click="AddElement()">AddElement</button> -->
-    <button @click="RemoveElement()">RemoveElement</button>
-    <button @click="SelectElement()">SelectElement</button>
+  <v-app>
+    <v-app-bar
+      app
+      color="primary"
+      dark
+    >
+      <div class="d-flex align-center">
+        <v-img
+          alt="Vuetify Logo"
+          class="shrink mr-2"
+          contain
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+          transition="scale-transition"
+          width="40"
+        />
 
-    <select v-model="selectedColor">
-      <option v-for="(option,index) in options" v-bind:value="option" :key="index">{{ option.type }}</option>
-    </select>
-    <select v-model="selected">
-      <option v-for="(option,index) in options" v-bind:value="option" :key="index">{{ option.type }}</option>
-    </select>
-    <!-- 
-   <input type="radio" :value="new Objects.Rectangle()" v-model="typeToDraw">
-      <label for="one">One</label>
-    <input type="radio" value="Two" v-model="typeToDraw">
-    <label for="two">Two</label>
-    <span>Picked: {{ typeToDraw }}</span>-->
+        <v-img
+          alt="Vuetify Name"
+          class="shrink mt-1 hidden-sm-and-down"
+          contain
+          min-width="100"
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
+          width="100"
+        />
+      </div>
 
-    <div class="canvas-section">
-      <my-canvas style="width: 100%; height: 600px;">
-        <component :is="obj.type" :key="obj.version" :val="obj" v-for="(obj) in elements"></component>
-      </my-canvas>
-      <my-canvas style="width: 100%; height: 600px;" @drawDummy="drawDummy" @draw="draw">
-        <component :is="obj.type" :key="obj.version" :val="obj" v-for="(obj) in elementsDummy"></component>
-      </my-canvas>
-    </div>
-  </div>
+      <v-spacer></v-spacer>
+
+      <v-btn
+        href="https://github.com/vuetifyjs/vuetify/releases/latest"
+        target="_blank"
+        text
+      >
+        <span class="mr-2">Latest Release</span>
+        <v-icon>mdi-open-in-new</v-icon>
+      </v-btn>
+    </v-app-bar>
+
+    <v-content>
+      <HelloWorld/>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
-import MyCanvas from "./MyCanvas.vue";
-import rectangleCanvas from "./types/rectangle.vue";
-import circleCanvas from "./types/circle.vue";
-import clearCanvas from "./types/clear.vue";
-import lineCanvas from "./types/line.vue";
-import eraserCanvas from "./types/eraser.vue";
-import Objects from "./types/objects";
+import HelloWorld from './components/HelloWorld';
 
 export default {
-  name: "app",
+  name: 'App',
+
   components: {
-    MyCanvas,
-    rectangleCanvas,
-    clearCanvas,
-    circleCanvas,
-    lineCanvas,
-    eraserCanvas
+    HelloWorld,
   },
 
-  data() {
-    return {
-      elements: [new Objects.Clear(0)],
-      elementsDummy: [new Objects.Clear(0)],
-      options: [
-        new Objects.Rectangle(),
-        new Objects.Circle(),
-        new Objects.Line(),
-        new Objects.Eraser()
-      ],
-      predefinedColors: [
-        "#000000",
-        "#FF0000",
-        "#00ff00",
-        "#40e0d0",
-        "#800000",
-        "#0000ff",
-        "#008000",
-        "#ffd700",
-        "#8a2be2",
-        "#ff00ff",
-        "#c0c0c0",
-        "#ffff00",
-        "#088da5",
-        "#003366"
-      ],
-      selectedColor: this.predefinedColors[0],
-      selected: null
-    };
-  },
-  methods: {
-    RemoveElement() {
-      if (this.elements.length === 1) {
-        return;
-      }
-      this.elements.pop();
-      this.elements.forEach(f => ++f.version);
-    },
-    drawDummy({ now, prev }) {
-      if (!this.selected) {
-        return;
-      }
-      let color = {
-        red: 255,
-        green: 0,
-        blue: 0
-      };
-      var lastVersion = this.elementsDummy[this.elementsDummy.length - 1]
-        .version;
-      let newElementClear = new Objects.Clear(++lastVersion);
-      let object = this.selected.create(now, prev, color, ++lastVersion);
-
-      this.elementsDummy = [newElementClear, object];
-    },
-    draw({ now, prev }) {
-      if (!this.selected) {
-        return;
-      }
-      //var lastVersion = this.elementsDummy[this.elementsDummy.length - 1].version;
-      this.elementsDummy = [new Objects.Clear(0)];
-      let color = {
-        red: Math.floor(Math.random() * 255),
-        green: Math.floor(Math.random() * 255),
-        blue: Math.floor(Math.random() * 255)
-      };
-      var lastVersion = this.elements[this.elements.length - 1].version;
-      let object = this.selected.create(now, prev, color, ++lastVersion);
-      //let rectangle = new Objects.Rectangle(now, prev, color, ++lastVersion);
-      this.elements.push(object);
-    }
-  }
+  data: () => ({
+    //
+  }),
 };
 </script>
-
-<style>
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
-
-#app {
-  position: relative;
-  height: 100vh;
-  width: 100vw;
-  padding: 20px;
-  box-sizing: border-box;
-}
-.canvas-section {
-  position: relative;
-  width: 100%;
-  height: 600px;
-}
-.my-canvas-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-.canvas-section:last-child {
-  z-index: 2;
-}
-</style>

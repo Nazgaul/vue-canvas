@@ -1,61 +1,146 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa" target="_blank" rel="noopener">pwa</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank" rel="noopener">vuex</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
-  </div>
+  <v-container fluid>
+    <!-- <button @click="AddElement()">AddElement</button> -->
+    <v-btn  @click="RemoveElement()">Remove Element</v-btn>
+    <v-btn  @click="SelectElement()">Select Element</v-btn>
+    <v-color-picker v-model="selectedColor"></v-color-picker>
+    <v-select v-model="selected"
+          :items="options"
+          label="Standard"
+        ></v-select>
+    <!-- <select v-model="selectedColor">
+      <option v-for="(option,index) in options" v-bind:value="option" :key="index">{{ option.type }}</option>
+    </select>
+    <select v-model="selected">
+      <option v-for="(option,index) in options" v-bind:value="option" :key="index">{{ option.type }}</option>
+    </select> -->
+    <!-- 
+   <input type="radio" :value="new Objects.Rectangle()" v-model="typeToDraw">
+      <label for="one">One</label>
+    <input type="radio" value="Two" v-model="typeToDraw">
+    <label for="two">Two</label>
+    <span>Picked: {{ typeToDraw }}</span>-->
+
+    <div class="canvas-section">
+      <my-canvas style="width: 100%; height: 600px;">
+        <component :is="obj.type" :key="obj.version" :val="obj" v-for="(obj) in elements"></component>
+      </my-canvas>
+      <my-canvas style="width: 100%; height: 600px;" @drawDummy="drawDummy" @draw="draw">
+        <component :is="obj.type" :key="obj.version" :val="obj" v-for="(obj) in elementsDummy"></component>
+      </my-canvas>
+    </div>
+  </v-container>
 </template>
 
 <script>
+import MyCanvas from ".././MyCanvas.vue";
+import rectangleCanvas from "../types/rectangle.vue";
+import circleCanvas from "../types/circle.vue";
+import clearCanvas from "../types/clear.vue";
+import lineCanvas from "../types/line.vue";
+import eraserCanvas from "../types/eraser.vue";
+import Objects from "../types/objects";
+
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
+    components: {
+      MyCanvas,
+      rectangleCanvas,
+      clearCanvas,
+      circleCanvas,
+      lineCanvas,
+      eraserCanvas
+    },
+  data() {
+    return {
+      elements: [new Objects.Clear(0)],
+      elementsDummy: [new Objects.Clear(0)],
+      options: [
+       {text: 'rectangle' ,value: new Objects.Rectangle()},
+       {text: 'circle' ,value: new Objects.Circle()},
+       {text: 'line' ,value: new Objects.Line()},
+       {text: 'eraser' ,value: new Objects.Eraser()},
+      ],
+     
+      selectedColor: null,
+      selected: null
+    }
+  },
+
+    methods: {
+    RemoveElement() {
+      if (this.elements.length === 1) {
+        return;
+      }
+      this.elements.pop();
+      this.elements.forEach(f => ++f.version);
+    },
+    drawDummy({ now, prev }) {
+      if (!this.selected) {
+        return;
+      }
+      let color = {
+        red: 255,
+        green: 0,
+        blue: 0
+      };
+      var lastVersion = this.elementsDummy[this.elementsDummy.length - 1]
+        .version;
+      let newElementClear = new Objects.Clear(++lastVersion);
+      let object = this.selected.create(now, prev, color, ++lastVersion);
+ 
+      this.elementsDummy = [newElementClear, object];
+    },
+    draw({ now, prev }) {
+      if (!this.selected) {
+        return;
+      }
+      //var lastVersion = this.elementsDummy[this.elementsDummy.length - 1].version;
+      this.elementsDummy = [new Objects.Clear(0)];
+      let v = this.selectedColor
+      console.log(v);
+      // let color = {
+      //   red: Math.floor(Math.random() * 255),
+      //   green: Math.floor(Math.random() * 255),
+      //   blue: Math.floor(Math.random() * 255)
+      // };
+      var lastVersion = this.elements[this.elements.length - 1].version;
+      let object = this.selected.create(now, prev, v.hex, ++lastVersion);
+      //let rectangle = new Objects.Rectangle(now, prev, color, ++lastVersion);
+      this.elements.push(object);
+    }
   }
-}
+  }
+  
+
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
+<style>
+html,
+body {
+  margin: 0;
   padding: 0;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+
+#app {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  padding: 20px;
+  box-sizing: border-box;
 }
-a {
-  color: #42b983;
+.canvas-section {
+  position: relative;
+  width: 100%;
+  height: 600px;
+}
+.my-canvas-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.canvas-section:last-child {
+  z-index: 2;
 }
 </style>

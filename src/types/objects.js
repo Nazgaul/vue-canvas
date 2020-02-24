@@ -18,7 +18,7 @@ class Rectangle extends BaseCanvasElement {
         rectange.y = prev.y || 0;
         rectange.width = now.x-prev.x || 0;
         rectange.height = now.y-prev.y || 0;
-        rectange.color = `rgb(${color.red},${color.green},${color.blue})` || '#F00';
+        rectange.color = color;
         rectange.lineWidth = 4;
         rectange.version = version;
         return rectange;
@@ -65,7 +65,7 @@ class Circle extends BaseCanvasElement {
         var nDeltaX = now.x - prev.x;
         var nDeltaY = now.y - prev.y;
         circle.radius = Math.sqrt(nDeltaX * nDeltaY);
-        circle.color = `rgb(${color.red},${color.green},${color.blue})` || '#F00';
+        circle.color = color;
         circle.lineWidth = 4;
         circle.version = version;
         return circle;
@@ -85,7 +85,7 @@ class Line extends BaseCanvasElement {
         line.y = prev.y || 0;
         line.toX = now.x;
         line.toY = now.y;
-        line.color = `rgb(${color.red},${color.green},${color.blue})` || '#F00';
+        line.color = color;
         line.lineWidth = 4;
         line.version = version;
         return line;
