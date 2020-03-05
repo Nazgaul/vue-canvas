@@ -15,6 +15,9 @@ export default {
     ctx.beginPath();
     ctx.moveTo(this.val.x, this.val.y);
     ctx.lineTo(this.val.toX, this.val.toY);
+    if (this.val.isDummy) {
+      ctx.setLineDash([20, 5]);
+    }
     ctx.closePath();
     ctx.stroke();
     return null;

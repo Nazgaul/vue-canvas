@@ -15,6 +15,9 @@ export default {
     ctx.beginPath();
     ctx.arc(this.val.x, this.val.y, this.val.radius, 0, 2 * Math.PI);
     ctx.strokeStyle = this.val.color;
+    if (this.val.isDummy) {
+      ctx.setLineDash([20, 5]);
+    }
     ctx.stroke();
     return null;
   }

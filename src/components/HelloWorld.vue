@@ -3,29 +3,29 @@
     <!-- <button @click="AddElement()">AddElement</button> -->
     <v-color-picker v-model="selectedColor"></v-color-picker>
     <div class="text-center">
-       <v-btn class="ma-2"
+      <v-btn
+        class="ma-2"
         v-for="(command,key) in commands"
         :key="key"
         small
         outlined
-       :color="selectedCommand != null && selectedCommand===command ? 'green' : 'black'"
+        :color="selectedCommand != null && selectedCommand===command ? 'green' : 'black'"
         @click="SelectCommand(command)"
       >
-       <!-- :color="selectedCommand != null && selectedCommand.type===command.type ? 'green' : 'black'" -->
+        <!-- :color="selectedCommand != null && selectedCommand.type===command.type ? 'green' : 'black'" -->
         {{key}}
       </v-btn>
-      <v-btn class="ma-2"
+      <v-btn
+        class="ma-2"
         v-for="(shape,key) in shapes"
         :key="key"
         small
         outlined
         :color="selectedShape != null && selectedShape.type===shape.type ? 'green' : 'black'"
         @click="SelectShapeAction(key)"
-      >
-        {{key}}
-      </v-btn>
+      >{{key}}</v-btn>
     </div>
- 
+
     <div class="canvas-section">
       <my-canvas style="width: 100%; height: 600px;">
         <component :is="obj.type" :key="obj.version" :val="obj" v-for="(obj) in elements"></component>
@@ -62,18 +62,17 @@ export default {
   },
   data() {
     return {
-     
       //todo : selectShape, equation, handwriting, upload image, snapshot,
       elements: [new Objects.Clear(0)],
       elementsDummy: [new Objects.Clear(0)],
       commands: {
-        "Clear All" : this.ClearAll,
-        "Undo" : this.RemoveElement,
-        "Select" : this.SelectElement,
+        "Clear All": this.ClearAll,
+        Undo: this.RemoveElement,
+        Select: this.SelectElement
       },
       shapes: {
-        rectangle:  new Objects.Rectangle() ,
-        circle:  new Objects.Circle(),
+        rectangle: new Objects.Rectangle(),
+        circle: new Objects.Circle(),
         line: new Objects.Line(),
         eraser: new Objects.Eraser()
       },
@@ -96,7 +95,7 @@ export default {
       if (this.elements.length === 1) {
         return;
       }
-      if (!confirm("Are you sure?"))  {
+      if (!confirm("Are you sure?")) {
         return;
       }
       let clearObject = this.elements[0];
@@ -106,72 +105,82 @@ export default {
     SelectElement() {
       this.selectedCommand = this.commands["Select"];
       this.selectedShape = null;
-
     },
     SelectShapeAction(shape) {
-      this.selectedCommand  = null;
+      this.selectedCommand = null;
       this.selectedShape = this.shapes[shape];
     },
     SelectCommand(command) {
-       command();
-    //  // this.selectedShape
-     },
+      command();
+      //  // this.selectedShape
+    },
 
     drawDummy({ now, prev }) {
-      if (!this.selectedShape) {
-        return;
-      }
-      if (typeof(this.selectedShape.version) !== 'number') {
-        return
-      }
-
-      var lastVersion = this.elementsDummy[this.elementsDummy.length - 1]
-        .version;
-      let newElementClear = new Objects.Clear(++lastVersion);
-
-      let object = this.selectedShape.create(
+      if (this.selectedShape) {
+        this.elementsDummy[0].version++;
+        console.log("a" + this.elementsDummy[0].version);
+        let object = this.selectedShape.create(
           now,
           prev,
           this.selectedColor.hex,
-          ++lastVersion,
+          "a" + this.elementsDummy[0].version,
           true
-      );
-      this.elementsDummy = [newElementClear,object];
+        );
+        this.elementsDummy = [this.elementsDummy[0], object];
+      }
+       if (
+         this.selectedCommand === this.commands["Select"] &&
+         this.elementsDummy.length === 2
+       ) {
+         this.elementsDummy[0].version++;
+         const element = this.elementsDummy[1];
+         element.version = "a" + this.elementsDummy[0].version;
+         element.x = now.x;
+         element.y = now.y;
+       }
     },
-    draw({ now, prev }) {
+    draw() {
       if (!this.selectedShape) {
         return;
       }
-      if (typeof(this.selectedShape.version) !== 'number') {
-        return
-      }
-      this.elementsDummy = [new Objects.Clear(0)];
-      let v = this.selectedColor;
-
+      this.transferElemet();
+    },
+    transferElemet() {
+      console.log("here");
       var lastVersion = this.elements[this.elements.length - 1].version;
-      let object = this.selectedShape.create(now, prev, v.hex, ++lastVersion,false);
+      let object = this.elementsDummy.pop();
+      object.version = ++lastVersion;
+      object.isDummy = false;
+      
+      this.elementsDummy = [new Objects.Clear(0)];
       this.elements.push(object);
+      console.log(this.elements);
     },
     click({ x, y }) {
       if (!this.selectedCommand) {
         return;
       }
       if (this.selectedCommand === this.commands["Select"]) {
-        this.findElementOnCanvas({x,y});
+        if (this.elementsDummy.length === 1) {
+          this.findElementOnCanvas({ x, y });
+          return;
+        }
+         this.transferElemet();
       }
-      console.log(x, y);
+      //We can do draw in here
     },
-    findElementOnCanvas({x,y}) {
-      for (let index = this.elements.length-1; index >= 0; index--) {
+    findElementOnCanvas({ x, y }) {
+      for (let index = this.elements.length - 1; index >= 0; index--) {
         const element = this.elements[index];
-        if (element.isInShape({x,y})) {
-          
-          this.selectedElement = element;
-          this.selectedElement.isSelected = true;
+        if (element.isInShape({ x, y })) {
+          let elementArr = this.elements.splice(index, 1);
+          let element = elementArr[0];
+          this.elements.forEach(f => ++f.version);
+          element.isDummy = true;
+          this.elementsDummy.push(element);
           break;
         }
       }
-      //  console.log('did not find');
     }
   }
 };

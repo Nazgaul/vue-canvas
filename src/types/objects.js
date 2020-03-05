@@ -77,7 +77,8 @@ class Circle extends BaseCanvasElement {
         return circle;
     }
     isInShape({ x, y }) {
-        return false;
+        let v = Math.pow(x - this.x, 2) + Math.pow(y - this.y, 2) < Math.pow(this.radius, 2);
+        return v;
     }
 }
 
@@ -85,7 +86,7 @@ class Line extends BaseCanvasElement {
     constructor(version) {
         super('lineCanvas', version);
     }
-    create(now, prev, color, version,  isDummy) {
+    create(now, prev, color, version, isDummy) {
         let line = new Line();
         line.x = prev.x || 0;
         line.y = prev.y || 0;
@@ -99,7 +100,17 @@ class Line extends BaseCanvasElement {
     }
 
     isInShape({ x, y }) {
-        return false;
+        //let 
+        // if (x < this.x) {
+        //     return false;
+        // }
+        // if (y < this.y) {
+        //     this.false;
+        // }
+        // if (this.x + this.width > x && this.y + this.height > y) {
+        //     return true;
+        // }
+        // return false;
     }
 }
 
